@@ -1,3 +1,6 @@
 # Toolbox for Generating Temporal Residuals of Compressed Video
 
-TODO
+
+``` bash
+python cal_temp_diff.py
+```
