@@ -19,6 +19,7 @@ def load_img(img_path):
         value_buf,
     )   # 这样读出来是 uint8 类型
 
+    img_ndarray = img_ndarray / 255.
     img_ndarray = img_ndarray.astype(np.float32).transpose(2, 0, 1)
     img_tensor = torch.from_numpy(img_ndarray)
 
