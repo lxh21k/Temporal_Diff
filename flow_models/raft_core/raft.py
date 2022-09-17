@@ -31,7 +31,7 @@ class DottableDict(dict):
             self.__dict__ = dict()
 
 class RAFT(nn.Module):
-    def __init__(self):
+    def __init__(self, small=False, mixed_percision=True, alternate_corr=False):
         super(RAFT, self).__init__()
         
         # make dict dotable like args
@@ -39,7 +39,7 @@ class RAFT(nn.Module):
         args.allowDotting()
         
         # Default args
-        args.small = True
+        args.small = False
         args.mixed_precision = True
         args.alternate_corr = False
         self.args = args
@@ -108,7 +108,7 @@ class RAFT(nn.Module):
         return up_flow.reshape(N, 2, 8*H, 8*W)
 
 
-    def forward(self, image1, image2, iters=12, flow_init=None, upsample=True, test_mode=True):
+    def forward(self, image1, image2, iters=24, flow_init=None, upsample=True, test_mode=True):
         """ Estimate optical flow between pair of frames """
 
         image1 = 2 * (image1 / 255.0) - 1.0
@@ -155,10 +155,13 @@ class RAFT(nn.Module):
             # F(t+1) = F(t) + \Delta(t)
             coords1 = coords1 + delta_flow
 
+            # up_mask = None
             # upsample predictions
             if up_mask is None:
+                # print("Avoid to use mask upsample.")
                 flow_up = upflow8(coords1 - coords0)
             else:
+                # print("Mask is used!")
                 flow_up = self.upsample_flow(coords1 - coords0, up_mask)
             
             flow_predictions.append(flow_up)
